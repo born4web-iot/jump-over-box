@@ -13,7 +13,7 @@ namespace myTiles {
 . . . . . . . . . . 
 . . . . . . . . . . 
 . . . . . . . . . . 
-. . . . . . . . . . 
+2 2 2 2 2 2 2 2 2 2 
 . . . . . . . . . . 
 `, [myTiles.transparency16,sprites.castle.tilePath2,sprites.castle.tilePath5], TileScale.Sixteen);
         }
