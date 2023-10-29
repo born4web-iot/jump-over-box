@@ -1,9 +1,9 @@
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    boyJumper.vy = -200
+    mySprite.setVelocity(0, -200)
 })
-let boyJumper: Sprite = null
+let mySprite: Sprite = null
 tiles.setCurrentTilemap(tilemap`level1`)
-boyJumper = sprites.create(img`
+mySprite = sprites.create(img`
     ........................
     ....ffffff..............
     ..ffeeeef2f.............
@@ -29,4 +29,4 @@ boyJumper = sprites.create(img`
     ........................
     ........................
     `, SpriteKind.Player)
-tiles.placeOnTile(boyJumper, tiles.getTileLocation(1, 5))
+tiles.placeOnTile(mySprite, tiles.getTileLocation(1, 5))
