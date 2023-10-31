@@ -1,3 +1,7 @@
+def on_on_score():
+    game.game_over(True)
+info.on_score(getWinScore(), on_on_score)
+
 def on_a_pressed():
     # If this hitting bottom not added sprite can fly just by hitting button A and always wins :)
     # 
@@ -5,50 +9,31 @@ def on_a_pressed():
         boyJumper.vy = -250
 controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
-def setLevel4():
-    global gameLevel, gameUpdateTime, maxBarrelSpeed, minBarrelSpeed
-    gameLevel = 4
-    gameUpdateTime = 1000
-    maxBarrelSpeed = -120
-    minBarrelSpeed = -30
-    game.splash("Level " + str(gameLevel))
-
 def on_on_overlap(sprite, otherSprite):
     game.game_over(False)
 sprites.on_overlap(SpriteKind.player, SpriteKind.projectile, on_on_overlap)
 
-def setLevel3():
-    global gameLevel, gameUpdateTime, maxBarrelSpeed, minBarrelSpeed
-    gameLevel = 3
-    gameUpdateTime = 1500
-    maxBarrelSpeed = -100
-    minBarrelSpeed = -80
-    game.splash("Level " + str(gameLevel))
-def setLevel2():
-    global gameLevel, gameUpdateTime, maxBarrelSpeed, minBarrelSpeed
-    gameLevel = 2
-    gameUpdateTime = 2000
-    maxBarrelSpeed = -100
-    minBarrelSpeed = -80
-    game.splash("Level " + str(gameLevel))
+def getWinScore():
+    return BOXES_TO_WIN
 
-def on_on_score():
-    game.game_over(True)
-info.on_score(40, on_on_score)
+def on_on_destroyed(sprite2):
+    info.change_score_by(1)
+sprites.on_destroyed(SpriteKind.projectile, on_on_destroyed)
 
-def setLevel1():
+def setGameLevel(level: number, barrel_min: number, barrel_max: number, update_time: number):
     global gameLevel, gameUpdateTime, maxBarrelSpeed, minBarrelSpeed
-    gameLevel = 1
-    gameUpdateTime = 2000
-    maxBarrelSpeed = -80
-    minBarrelSpeed = -50
+    sprites.destroy_all_sprites_of_kind(SpriteKind.projectile)
+    gameLevel = level
+    gameUpdateTime = update_time
+    maxBarrelSpeed = barrel_max
+    minBarrelSpeed = barrel_min
     game.splash("Level " + str(gameLevel))
 newBarrel: Sprite = None
-BARRELS_WIN_NUMBER = 0
 minBarrelSpeed = 0
 maxBarrelSpeed = 0
 gameUpdateTime = 0
 gameLevel = 0
+BOXES_TO_WIN = 0
 boyJumper: Sprite = None
 tiles.set_current_tilemap(tilemap("""
     level1
@@ -83,29 +68,36 @@ boyJumper = sprites.create(img("""
 tiles.place_on_tile(boyJumper, tiles.get_tile_location(1, 5))
 boyJumper.ay = 500
 BARRELS_PER_LEVEL = 10
-setLevel1()
+BOXES_TO_WIN = 20
+setGameLevel(1, -50, -80, 2000)
 
 def on_update_interval():
-    global BARRELS_WIN_NUMBER, newBarrel
-    BARRELS_WIN_NUMBER = 10
+    global newBarrel
     newBarrel = sprites.create_projectile_from_side(img("""
-            1 e e e e e e 1 
-                    e e e e e e e e 
-                    1 1 1 1 1 1 1 1 
-                    e e e e e e e e 
-                    e e e e e e e e 
-                    1 1 1 1 1 1 1 1 
-                    e e e e e e e e 
-                    1 e e e e e e 1
+            . . . . . . f f f f . . . . . . 
+                    . . . . f f e e e e f f . . . . 
+                    . . . f e e e f f e e e f . . . 
+                    . . f f f f f 2 2 f f f f f . . 
+                    . . f f e 2 e 2 2 e 2 e f f . . 
+                    . . f e 2 f 2 f f 2 f 2 e f . . 
+                    . . f f f 2 2 e e 2 2 f f f . . 
+                    . f f e f 2 f e e f 2 f e f f . 
+                    . f e e f f e e e e f e e e f . 
+                    . . f e e e e e e e e e e f . . 
+                    . . . f e e e e e e e e f . . . 
+                    . . e 4 f f f f f f f f 4 e . . 
+                    . . 4 d f 2 2 2 2 2 2 f d 4 . . 
+                    . . 4 4 f 4 4 4 4 4 4 f 4 4 . . 
+                    . . . . . f f f f f f . . . . . 
+                    . . . . . f f . . f f . . . . .
         """),
         randint(maxBarrelSpeed, minBarrelSpeed),
         0)
     tiles.place_on_tile(newBarrel, tiles.get_tile_location(9, 5))
-    info.change_score_by(1)
     if info.score() == 5:
-        setLevel2()
+        setGameLevel(2, -80, -100, 1500)
     if info.score() == 10:
-        setLevel3()
-    if info.score() == 20:
-        setLevel4()
+        setGameLevel(3, -80, -100, 1000)
+    if info.score() == 15:
+        setGameLevel(4, -80, -100, 500)
 game.on_update_interval(gameUpdateTime, on_update_interval)
